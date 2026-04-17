@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Just Eat It</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container { max-width: 480px; width: 100%; }
+    h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; }
+    h1 span { color: #f97316; }
+    .subtitle { color: #888; margin-bottom: 32px; font-size: 0.95rem; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #aaa; }
+    select, input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      color: #f0f0f0;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    select:focus, input:focus { border-color: #f97316; }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #f97316;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #ea6a0a; }
+    button:disabled { background: #555; cursor: not-allowed; }
+    .result {
+      margin-top: 32px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 24px;
+      display: none;
+    }
+    .result.visible { display: block; }
+    .meal-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #f97316;
+      margin-bottom: 12px;
+    }
+    .reason { color: #ccc; line-height: 1.6; margin-bottom: 12px; }
+    .time-badge {
+      display: inline-block;
+      background: #2a2a2a;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    .loading { text-align: center; color: #888; margin-top: 32px; display: none; }
+    .loading.visible { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Just <span>Eat It</span></h1>
+    <p class="subtitle">Stop thinking. One meal. Decided.</p>
+
+    <div class="form-group">
+      <label>How's your energy right now?</label>
+      <select id="energy">
+        <option value="low">Low - I'm exhausted</option>
+        <option value="medium" selected>Medium - I'm okay</option>
+        <option value="high">High - I'm feeling good</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>How much time do you have?</label>
+      <select id="time">
+        <option value="5 minutes">5 minutes</option>
+        <option value="15 minutes" selected>15 minutes</option>
+        <option value="30 minutes">30 minutes</option>
+        <option value="1 hour">1 hour</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Any ingredients or cuisine in mind? (optional)</label>
+      <input type="text" id="ingredients" placeholder="e.g. chicken, pasta, something spicy...">
+    </div>
+
+    <div class="form-group">
+      <label>What's your mood?</label>
+      <select id="mood">
+        <option value="comfort food">Comfort food</option>
+        <option value="something light">Something light</option>
+        <option value="something healthy">Something healthy</option>
+        <option value="no preference">No preference</option>
+      </select>
+    </div>
+
+    <button id="btn" onclick="decide()">Decide for me</button>
+
+    <div class="loading" id="loading">Thinking...</div>
+
+    <div class="result" id="result">
+      <div class="meal-name" id="meal"></div>
+      <div class="reason" id="reason"></div>
+      <div class="time-badge" id="time-display"></div>
+    </div>
+  </div>
+
+  <script>
+    async function decide() {
+      const btn = document.getElementById('btn');
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
+
+      btn.disabled = true;
+      loading.classList.add('visible');
+      result.classList.remove('visible');
+
+      const body = {
+        energy: document.getElementById('energy').value,
+        time: document.getElementById('time').value,
+        ingredients: document.getElementById('ingredients').value || 'anything',
+        mood: document.getElementById('mood').value
+      };
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/decide', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await response.json();
+
+        document.getElementById('meal').textContent = data.meal;
+        document.getElementById('reason').textContent = data.reason;
+        document.getElementById('time-display').textContent = data.time;
+
+        result.classList.add('visible');
+      } catch (err) {
+        alert('Something went wrong. Make sure the server is running.');
+      } finally {
+        btn.disabled = false;
+        loading.classList.remove('visible');
+      }
+    }
+  </script>
+</body>
+</html>
