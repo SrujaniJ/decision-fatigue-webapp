@@ -116,6 +116,18 @@
       </select>
     </div>
 
+    <div class="form-group">
+      <label>Any dietary preferences?</label>
+      <select id="diet">
+        <option value="no restriction">No restriction</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="vegan">Vegan</option>
+        <option value="halal">Halal</option>
+        <option value="kosher">Kosher</option>
+        <option value="gluten-free">Gluten-free</option>
+      </select>
+    </div>
+
     <button id="btn" onclick="decide()">Decide for me</button>
 
     <div class="loading" id="loading">Thinking...</div>
@@ -141,7 +153,8 @@
         energy: document.getElementById('energy').value,
         time: document.getElementById('time').value,
         ingredients: document.getElementById('ingredients').value || 'anything',
-        mood: document.getElementById('mood').value
+        mood: document.getElementById('mood').value,
+        diet: document.getElementById('diet').value
       };
 
       try {

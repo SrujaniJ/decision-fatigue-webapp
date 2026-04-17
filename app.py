@@ -18,6 +18,7 @@ def decide():
     time_available = data.get("time", "30 minutes")
     ingredients = data.get("ingredients", "anything")
     mood = data.get("mood", "no preference")
+    diet = data.get("diet", "no restriction")
 
     prompt = f"""
     You are a decisive meal recommender. Your job is to eliminate decision fatigue.
@@ -29,11 +30,15 @@ def decide():
     - Time available: {time_available}
     - Ingredients/cuisine mood: {ingredients}
     - Current mood: {mood}
+    - Dietary preference: {diet}
+
+    If dietary preference is not "no restriction", you MUST strictly respect it.
+    Do not suggest anything that violates the dietary preference.
 
     Respond in this exact format:
     MEAL: [meal name]
-    REASON: [2 sentences max explaining why this fits
-        TIME: [how long it takes]
+    REASON: [2 sentences max explaining why this fits them right now]
+    TIME: [how long it takes]
     """
 
     response = client.chat.completions.create(
